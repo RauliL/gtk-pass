@@ -12,6 +12,8 @@ That's it.
 [passmenu]: https://git.zx2c4.com/password-store/tree/contrib/dmenu/passmenu
 [GTK]: https://gtk.org/
 
+![Screenshot of GTK-Pass](screenshot.png)
+
 ## Dependencies
 
 - [CMake](https://www.cmake.org)
