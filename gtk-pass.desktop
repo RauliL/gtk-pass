@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=GTK-Pass
+GenericName=Password Manager
+Comment=GUI for the standard UNIX password store
+Exec=gtk-pass
+Icon=gtk-pass
+Terminal=false
+Categories=Security;Utility;
+Keywords=Password;Manager;GTK;
