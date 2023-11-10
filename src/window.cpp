@@ -28,17 +28,19 @@ Window::Window()
   m_box.pack_start(m_search_bar, Gtk::PACK_SHRINK);
   m_box.pack_start(m_entry_list, Gtk::PACK_EXPAND_WIDGET);
 
-  m_search_bar.add(m_search_entry);
-  m_search_bar.connect_entry(m_search_entry);
-  m_search_bar.set_show_close_button(false);
-  m_search_bar.set_search_mode(true);
+  m_search_bar.set_margin_top(8);
+  m_search_bar.set_margin_bottom(8);
+  m_search_bar.set_margin_left(8);
+  m_search_bar.set_margin_right(8);
+  m_search_bar.pack_start(m_search_entry, Gtk::PACK_EXPAND_WIDGET);
 
+  m_search_entry.set_icon_from_icon_name("edit-find-symbolic");
   m_search_entry.set_completion(m_search_entry_completion);
 
   add(m_box);
   show_all();
 
-  m_search_entry.signal_search_changed().connect(sigc::mem_fun(
+  m_search_entry.signal_changed().connect(sigc::mem_fun(
     this,
     &Window::on_search_text_changed
   ));

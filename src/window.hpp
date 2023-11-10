@@ -33,7 +33,7 @@ private:
   Glib::RefPtr<PassEntries> m_pass_entries;
   Gtk::Box m_box;
   Glib::RefPtr<EntryCompletion> m_search_entry_completion;
-  Gtk::SearchBar m_search_bar;
-  Gtk::SearchEntry m_search_entry;
+  Gtk::Box m_search_bar;
+  Gtk::Entry m_search_entry;
   EntryList m_entry_list;
 };
