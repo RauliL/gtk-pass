@@ -10,6 +10,7 @@ CHECK_INCLUDE_FILE(wordexp.h HAVE_WORDEXP_H)
 
 ADD_EXECUTABLE(
   gtk-pass
+  ./entry-completion.cpp
   ./entry-list.cpp
   ./main.cpp
   ./pass.cpp
@@ -21,6 +22,12 @@ TARGET_COMPILE_FEATURES(
   gtk-pass
   PRIVATE
     cxx_std_11
+)
+
+TARGET_COMPILE_OPTIONS(
+  gtk-pass
+  PRIVATE
+    -Wall -Werror
 )
 
 TARGET_INCLUDE_DIRECTORIES(

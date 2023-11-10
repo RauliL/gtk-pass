@@ -13,9 +13,29 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-#pragma once
+#include "./entry-completion.hpp"
+#include "./pass.hpp"
 
-#include <glibmm.h>
+EntryCompletionRecord::EntryCompletionRecord()
+{
+  add(m_text_column);
+}
 
-bool expand_tilde(const std::string&, std::string&);
-bool glob(const std::string&, std::vector<Glib::ustring>&);
+EntryCompletion::EntryCompletion(const Glib::RefPtr<PassEntries>& pass_entries)
+  : m_completion_model(Gtk::ListStore::create(m_completion_record))
+{
+  set_model(m_completion_model);
+  set_text_column(m_completion_record.text_column());
+  for (const auto& entry : pass_entries->entries())
+  {
+    auto row = *(m_completion_model->append());
+
+    row[m_completion_record.text_column()] = entry;
+  }
+}
+
+Glib::RefPtr<EntryCompletion>
+EntryCompletion::create(const Glib::RefPtr<PassEntries>& pass_entries)
+{
+  return Glib::RefPtr<EntryCompletion>(new EntryCompletion(pass_entries));
+}

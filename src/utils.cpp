@@ -45,7 +45,7 @@ expand_tilde(const std::string& input, std::string& output)
 }
 
 bool
-glob(const std::string& pattern, std::vector<std::string>& results)
+glob(const std::string& pattern, std::vector<Glib::ustring>& results)
 {
   ::glob_t glob_result;
   int glob_return_value;

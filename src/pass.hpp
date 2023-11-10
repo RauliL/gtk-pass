@@ -15,7 +15,40 @@
  */
 #pragma once
 
+#include <algorithm>
+
 #include <glibmm.h>
 
-bool expand_tilde(const std::string&, std::string&);
-bool glob(const std::string&, std::vector<Glib::ustring>&);
+class PassEntries : public Glib::Object
+{
+public:
+  using container_type = std::vector<Glib::ustring>;
+
+  explicit PassEntries();
+
+  static Glib::RefPtr<PassEntries> create();
+
+  inline const container_type& entries() const
+  {
+    return m_container;
+  }
+
+  inline bool has(const Glib::ustring& entry) const
+  {
+    // Unfortunately Glib::ustring isn't hashable so we cannot use hash sets
+    // here for faster lookup.
+    return std::find(
+      std::begin(m_container),
+      std::end(m_container),
+      entry
+    ) != std::end(m_container);
+  }
+
+  void select(const Glib::ustring& entry) const;
+
+private:
+  void init();
+
+private:
+  container_type m_container;
+};

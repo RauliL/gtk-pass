@@ -16,18 +16,18 @@
 #include "./entry-list.hpp"
 #include "./utils.hpp"
 
-std::vector<std::string> read_pass_entries();
-void pass_select(const Glib::ustring&);
-
 EntryListColumns::EntryListColumns()
 {
   add(m_entry_column);
 }
 
-EntryList::EntryList()
-  : m_tree_model(Gtk::ListStore::create(m_columns))
+EntryList::EntryList(const Glib::RefPtr<PassEntries>& pass_entries)
+  : m_pass_entries(pass_entries)
+  , m_tree_model(Gtk::ListStore::create(m_columns))
   , m_tree_model_filter(Gtk::TreeModelFilter::create(m_tree_model))
 {
+  const auto& entry_column = m_columns.entry_column();
+
   m_tree_view.set_model(m_tree_model_filter);
   m_tree_view.set_headers_visible(false);
   m_tree_view.append_column("Entry", m_columns.entry_column());
@@ -60,7 +60,12 @@ EntryList::EntryList()
 
   add(m_scrolled_window);
 
-  populate();
+  for (const auto& entry : m_pass_entries->entries())
+  {
+    auto row = *(m_tree_model->append());
+
+    row[entry_column] = entry;
+  }
 }
 
 void
@@ -75,19 +80,6 @@ EntryList::on_row_activated(
   {
     const auto& row = *iter;
 
-    pass_select(row[m_columns.entry_column()]);
-  }
-}
-
-void
-EntryList::populate()
-{
-  const auto& entry_column = m_columns.entry_column();
-
-  for (const auto& entry : read_pass_entries())
-  {
-    auto row = *(m_tree_model->append());
-
-    row[entry_column] = entry;
+    m_pass_entries->select(row[m_columns.entry_column()]);
   }
 }

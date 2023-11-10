@@ -15,10 +15,11 @@
  */
 #include "./window.hpp"
 
-std::vector<std::string> read_pass_entries();
-
 Window::Window()
-  : m_box(Gtk::ORIENTATION_VERTICAL)
+  : m_pass_entries(PassEntries::create())
+  , m_box(Gtk::ORIENTATION_VERTICAL)
+  , m_search_entry_completion(EntryCompletion::create(m_pass_entries))
+  , m_entry_list(m_pass_entries)
 {
   set_title("Select password");
   set_default_size(450, 500);
@@ -32,12 +33,18 @@ Window::Window()
   m_search_bar.set_show_close_button(false);
   m_search_bar.set_search_mode(true);
 
+  m_search_entry.set_completion(m_search_entry_completion);
+
   add(m_box);
   show_all();
 
   m_search_entry.signal_search_changed().connect(sigc::mem_fun(
     this,
     &Window::on_search_text_changed
+  ));
+  m_search_entry.signal_activate().connect(sigc::mem_fun(
+    this,
+    &Window::on_search_activated
   ));
 }
 
@@ -72,4 +79,15 @@ void
 Window::on_search_text_changed()
 {
   m_entry_list.set_filter(m_search_entry.get_text());
+}
+
+void
+Window::on_search_activated()
+{
+  const auto& text = m_search_entry.get_text();
+
+  if (text.length() > 0 && m_pass_entries->has(text))
+  {
+    m_pass_entries->select(text);
+  }
 }

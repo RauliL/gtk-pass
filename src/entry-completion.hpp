@@ -15,7 +15,34 @@
  */
 #pragma once
 
-#include <glibmm.h>
+#include <gtkmm.h>
 
-bool expand_tilde(const std::string&, std::string&);
-bool glob(const std::string&, std::vector<Glib::ustring>&);
+#include "./pass.hpp"
+
+class EntryCompletionRecord : public Gtk::TreeModel::ColumnRecord
+{
+public:
+  explicit EntryCompletionRecord();
+
+  inline const Gtk::TreeModelColumn<Glib::ustring>& text_column() const
+  {
+    return m_text_column;
+  }
+
+private:
+  Gtk::TreeModelColumn<Glib::ustring> m_text_column;
+};
+
+class EntryCompletion : public Gtk::EntryCompletion
+{
+public:
+  explicit EntryCompletion(const Glib::RefPtr<PassEntries>& pass_entries);
+
+  static Glib::RefPtr<EntryCompletion> create(
+    const Glib::RefPtr<PassEntries>& pass_entries
+  );
+
+private:
+  EntryCompletionRecord m_completion_record;
+  Glib::RefPtr<Gtk::ListStore> m_completion_model;
+};

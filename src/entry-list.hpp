@@ -17,6 +17,8 @@
 
 #include <gtkmm.h>
 
+#include "./pass.hpp"
+
 class EntryListColumns : public Gtk::TreeModel::ColumnRecord
 {
 public:
@@ -34,7 +36,7 @@ private:
 class EntryList : public Gtk::Bin
 {
 public:
-  explicit EntryList();
+  explicit EntryList(const Glib::RefPtr<PassEntries>& pass_entries);
 
   inline void set_filter(const Glib::ustring& filter)
   {
@@ -49,9 +51,7 @@ protected:
   );
 
 private:
-  void populate();
-
-private:
+  Glib::RefPtr<PassEntries> m_pass_entries;
   Gtk::ScrolledWindow m_scrolled_window;
   Gtk::TreeView m_tree_view;
   EntryListColumns m_columns;

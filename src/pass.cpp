@@ -17,8 +17,7 @@
 
 #include <unistd.h>
 
-#include <glibmm.h>
-
+#include "./pass.hpp"
 #include "./utils.hpp"
 
 static bool
@@ -41,19 +40,35 @@ get_password_store_dir(std::string& output)
   return false;
 }
 
-std::vector<std::string>
-read_pass_entries()
+PassEntries::PassEntries()
 {
-  std::vector<std::string> entries;
+  init();
+}
+
+Glib::RefPtr<PassEntries>
+PassEntries::create()
+{
+  return Glib::RefPtr<PassEntries>(new PassEntries());
+}
+
+void
+PassEntries::select(const Glib::ustring& entry) const
+{
+  ::execlp("pass", "pass", "show", "-c", entry.c_str(), nullptr);
+}
+
+void
+PassEntries::init()
+{
   std::string prefix;
 
   if (get_password_store_dir(prefix))
   {
-    if (glob(prefix + "/**/*.gpg", entries))
+    if (glob(prefix + "/**/*.gpg", m_container))
     {
       // We got some entries, but they have are full filenames. Lets tweak them
       // a little bit.
-      for (auto& entry : entries)
+      for (auto& entry : m_container)
       {
         // Remove the password store directory from the entry.
         entry = entry.substr(prefix.length() + 1);
@@ -64,12 +79,4 @@ read_pass_entries()
   } else {
     std::cerr << "Unable to determine location of passwords." << std::endl;
   }
-
-  return entries;
-}
-
-void
-pass_select(const Glib::ustring& entry)
-{
-  ::execlp("pass", "pass", "show", "-c", entry.c_str(), nullptr);
 }
