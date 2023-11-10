@@ -42,6 +42,8 @@ public:
     const std::shared_ptr<PasswordStore>& store
   );
 
+  void reload(const std::shared_ptr<PasswordStore>& store);
+
 private:
   EntryCompletionRecord m_completion_record;
   Glib::RefPtr<Gtk::ListStore> m_completion_model;

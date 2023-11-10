@@ -63,6 +63,16 @@ Window::on_key_press_event(GdkEventKey* event)
 
       return false;
     }
+
+    // Reload password store when user presses ^R anywhere inside the window.
+    if (event->keyval == GDK_KEY_r)
+    {
+      m_store->reload();
+      m_search_entry_completion->reload(m_store);
+      m_entry_list.reload();
+
+      return false;
+    }
   }
 
   // Also terminate the application if user presses escape anywhere inside the

@@ -44,6 +44,8 @@ public:
     m_tree_model_filter->refilter();
   }
 
+  void reload();
+
 protected:
   void on_row_activated(
     const Gtk::TreeModel::Path& path,

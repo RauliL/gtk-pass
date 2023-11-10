@@ -26,8 +26,6 @@ EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
   , m_tree_model(Gtk::ListStore::create(m_columns))
   , m_tree_model_filter(Gtk::TreeModelFilter::create(m_tree_model))
 {
-  const auto& entry_column = m_columns.entry_column();
-
   m_tree_view.set_model(m_tree_model_filter);
   m_tree_view.set_headers_visible(false);
   m_tree_view.append_column("Entry", m_columns.entry_column());
@@ -57,9 +55,17 @@ EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
     Gtk::POLICY_AUTOMATIC
   );
   m_scrolled_window.add(m_tree_view);
-
   add(m_scrolled_window);
 
+  reload();
+}
+
+void
+EntryList::reload()
+{
+  const auto& entry_column = m_columns.entry_column();
+
+  m_tree_model->clear();
   for (const auto& entry : *m_store)
   {
     auto row = *(m_tree_model->append());

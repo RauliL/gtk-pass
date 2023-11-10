@@ -27,16 +27,25 @@ EntryCompletion::EntryCompletion(const std::shared_ptr<PasswordStore>& store)
   set_popup_completion(false);
   set_model(m_completion_model);
   set_text_column(m_completion_record.text_column());
-  for (const auto& entry : *store)
-  {
-    auto row = *(m_completion_model->append());
-
-    row[m_completion_record.text_column()] = entry;
-  }
+  reload(store);
 }
 
 Glib::RefPtr<EntryCompletion>
 EntryCompletion::create(const std::shared_ptr<PasswordStore>& store)
 {
   return Glib::RefPtr<EntryCompletion>(new EntryCompletion(store));
+}
+
+void
+EntryCompletion::reload(const std::shared_ptr<PasswordStore>& store)
+{
+  const auto& text_column = m_completion_record.text_column();
+
+  m_completion_model->clear();
+  for (const auto& entry : *store)
+  {
+    auto row = *(m_completion_model->append());
+
+    row[text_column] = entry;
+  }
 }
