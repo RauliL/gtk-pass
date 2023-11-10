@@ -26,6 +26,11 @@ EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
   , m_tree_model(Gtk::ListStore::create(m_columns))
   , m_tree_model_filter(Gtk::TreeModelFilter::create(m_tree_model))
 {
+  set_margin_top(8);
+  set_margin_bottom(8);
+  set_margin_left(8);
+  set_margin_right(8);
+
   m_tree_view.set_model(m_tree_model_filter);
   m_tree_view.set_headers_visible(false);
   m_tree_view.append_column("Entry", m_columns.entry_column());
