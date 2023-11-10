@@ -24,6 +24,8 @@ EntryCompletionRecord::EntryCompletionRecord()
 EntryCompletion::EntryCompletion(const Glib::RefPtr<PassEntries>& pass_entries)
   : m_completion_model(Gtk::ListStore::create(m_completion_record))
 {
+  set_inline_completion(true);
+  set_popup_completion(false);
   set_model(m_completion_model);
   set_text_column(m_completion_record.text_column());
   for (const auto& entry : pass_entries->entries())
