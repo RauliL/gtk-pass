@@ -1,9 +1,9 @@
-# ![](icons/gtk-pass32.png) GTK-Pass
+# ![](icons/gtk-pass48.png) GTK-Pass
 
 GTK-Pass is an simple GUI for the [pass] password manager inspired by
 [passmenu], except that it uses [GTK] instead of dmenu. It simply lists
 all available passwords from your password store (with simple search
-available) and when you select one, the password is copied on your clipboard
+available) and when you select one, the password is copied to your clipboard
 for 45 seconds.
 
 That's it.
