@@ -21,7 +21,7 @@
 #include <glob.h>
 #include <wordexp.h>
 
-bool
+static bool
 expand_tilde(const std::string& input, std::string& output)
 {
   ::wordexp_t result;
@@ -77,4 +77,24 @@ glob(const std::string& pattern, std::vector<Glib::ustring>& results)
   ::globfree(&glob_result);
 
   return true;
+}
+
+bool
+get_password_store_dir(std::string& output)
+{
+  std::string raw_path("~/.password-store");
+  std::string expanded_path;
+
+  if (const auto env_raw_path = std::getenv("PASSWORD_STORE_DIR"))
+  {
+    raw_path = env_raw_path;
+  }
+  if (expand_tilde(raw_path, expanded_path))
+  {
+    output = expanded_path;
+
+    return true;
+  }
+
+  return false;
 }

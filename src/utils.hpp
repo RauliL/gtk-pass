@@ -17,5 +17,5 @@
 
 #include <glibmm.h>
 
-bool expand_tilde(const std::string&, std::string&);
 bool glob(const std::string&, std::vector<Glib::ustring>&);
+bool get_password_store_dir(std::string&);

@@ -17,53 +17,22 @@
 
 #include <unistd.h>
 
-#include "./pass.hpp"
+#include "./password-store.hpp"
 #include "./utils.hpp"
 
-static bool
-get_password_store_dir(std::string& output)
+PasswordStore::PasswordStore()
 {
-  std::string raw_path("~/.password-store");
-  std::string expanded_path;
-
-  if (const auto env_raw_path = std::getenv("PASSWORD_STORE_DIR"))
-  {
-    raw_path = env_raw_path;
-  }
-  if (expand_tilde(raw_path, expanded_path))
-  {
-    output = expanded_path;
-
-    return true;
-  }
-
-  return false;
-}
-
-PassEntries::PassEntries()
-{
-  init();
-}
-
-Glib::RefPtr<PassEntries>
-PassEntries::create()
-{
-  return Glib::RefPtr<PassEntries>(new PassEntries());
+  reload();
 }
 
 void
-PassEntries::select(const Glib::ustring& entry) const
-{
-  ::execlp("pass", "pass", "show", "-c", entry.c_str(), nullptr);
-}
-
-void
-PassEntries::init()
+PasswordStore::reload()
 {
   std::string prefix;
 
   if (get_password_store_dir(prefix))
   {
+    m_container.clear();
     if (glob(prefix + "/**/*.gpg", m_container))
     {
       // We got some entries, but they have are full filenames. Lets tweak them
@@ -78,5 +47,14 @@ PassEntries::init()
     }
   } else {
     std::cerr << "Unable to determine location of passwords." << std::endl;
+  }
+}
+
+void
+PasswordStore::select(const_reference entry)
+{
+  if (has(entry))
+  {
+    ::execlp("pass", "pass", "show", "-c", entry.c_str(), nullptr);
   }
 }

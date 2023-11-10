@@ -17,7 +17,7 @@
 
 #include <gtkmm.h>
 
-#include "./pass.hpp"
+#include "./password-store.hpp"
 
 class EntryCompletionRecord : public Gtk::TreeModel::ColumnRecord
 {
@@ -36,10 +36,10 @@ private:
 class EntryCompletion : public Gtk::EntryCompletion
 {
 public:
-  explicit EntryCompletion(const Glib::RefPtr<PassEntries>& pass_entries);
+  explicit EntryCompletion(const std::shared_ptr<PasswordStore>& store);
 
   static Glib::RefPtr<EntryCompletion> create(
-    const Glib::RefPtr<PassEntries>& pass_entries
+    const std::shared_ptr<PasswordStore>& store
   );
 
 private:

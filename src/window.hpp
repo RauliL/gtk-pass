@@ -17,7 +17,7 @@
 
 #include "./entry-completion.hpp"
 #include "./entry-list.hpp"
-#include "./pass.hpp"
+#include "./password-store.hpp"
 
 class Window : public Gtk::Window
 {
@@ -30,7 +30,7 @@ protected:
   void on_search_activated();
 
 private:
-  Glib::RefPtr<PassEntries> m_pass_entries;
+  std::shared_ptr<PasswordStore> m_store;
   Gtk::Box m_box;
   Glib::RefPtr<EntryCompletion> m_search_entry_completion;
   Gtk::Box m_search_bar;

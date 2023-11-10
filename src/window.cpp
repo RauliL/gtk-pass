@@ -16,10 +16,10 @@
 #include "./window.hpp"
 
 Window::Window()
-  : m_pass_entries(PassEntries::create())
+  : m_store(std::make_shared<PasswordStore>())
   , m_box(Gtk::ORIENTATION_VERTICAL)
-  , m_search_entry_completion(EntryCompletion::create(m_pass_entries))
-  , m_entry_list(m_pass_entries)
+  , m_search_entry_completion(EntryCompletion::create(m_store))
+  , m_entry_list(m_store)
 {
   set_title("Select password");
   set_default_size(450, 500);
@@ -88,8 +88,8 @@ Window::on_search_activated()
 {
   const auto& text = m_search_entry.get_text();
 
-  if (text.length() > 0 && m_pass_entries->has(text))
+  if (text.length() > 0)
   {
-    m_pass_entries->select(text);
+    m_store->select(text);
   }
 }

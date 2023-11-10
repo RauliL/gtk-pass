@@ -17,7 +17,7 @@
 
 #include <gtkmm.h>
 
-#include "./pass.hpp"
+#include "./password-store.hpp"
 
 class EntryListColumns : public Gtk::TreeModel::ColumnRecord
 {
@@ -36,7 +36,7 @@ private:
 class EntryList : public Gtk::Bin
 {
 public:
-  explicit EntryList(const Glib::RefPtr<PassEntries>& pass_entries);
+  explicit EntryList(const std::shared_ptr<PasswordStore>& store);
 
   inline void set_filter(const Glib::ustring& filter)
   {
@@ -51,7 +51,7 @@ protected:
   );
 
 private:
-  Glib::RefPtr<PassEntries> m_pass_entries;
+  std::shared_ptr<PasswordStore> m_store;
   Gtk::ScrolledWindow m_scrolled_window;
   Gtk::TreeView m_tree_view;
   EntryListColumns m_columns;

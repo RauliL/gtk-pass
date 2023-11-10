@@ -21,8 +21,8 @@ EntryListColumns::EntryListColumns()
   add(m_entry_column);
 }
 
-EntryList::EntryList(const Glib::RefPtr<PassEntries>& pass_entries)
-  : m_pass_entries(pass_entries)
+EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
+  : m_store(store)
   , m_tree_model(Gtk::ListStore::create(m_columns))
   , m_tree_model_filter(Gtk::TreeModelFilter::create(m_tree_model))
 {
@@ -60,7 +60,7 @@ EntryList::EntryList(const Glib::RefPtr<PassEntries>& pass_entries)
 
   add(m_scrolled_window);
 
-  for (const auto& entry : m_pass_entries->entries())
+  for (const auto& entry : *m_store)
   {
     auto row = *(m_tree_model->append());
 
@@ -80,6 +80,6 @@ EntryList::on_row_activated(
   {
     const auto& row = *iter;
 
-    m_pass_entries->select(row[m_columns.entry_column()]);
+    m_store->select(row[m_columns.entry_column()]);
   }
 }

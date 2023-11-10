@@ -13,7 +13,7 @@ ADD_EXECUTABLE(
   ./entry-completion.cpp
   ./entry-list.cpp
   ./main.cpp
-  ./pass.cpp
+  ./password-store.cpp
   ./utils.cpp
   ./window.cpp
 )

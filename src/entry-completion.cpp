@@ -14,21 +14,20 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 #include "./entry-completion.hpp"
-#include "./pass.hpp"
 
 EntryCompletionRecord::EntryCompletionRecord()
 {
   add(m_text_column);
 }
 
-EntryCompletion::EntryCompletion(const Glib::RefPtr<PassEntries>& pass_entries)
+EntryCompletion::EntryCompletion(const std::shared_ptr<PasswordStore>& store)
   : m_completion_model(Gtk::ListStore::create(m_completion_record))
 {
   set_inline_completion(true);
   set_popup_completion(false);
   set_model(m_completion_model);
   set_text_column(m_completion_record.text_column());
-  for (const auto& entry : pass_entries->entries())
+  for (const auto& entry : *store)
   {
     auto row = *(m_completion_model->append());
 
@@ -37,7 +36,7 @@ EntryCompletion::EntryCompletion(const Glib::RefPtr<PassEntries>& pass_entries)
 }
 
 Glib::RefPtr<EntryCompletion>
-EntryCompletion::create(const Glib::RefPtr<PassEntries>& pass_entries)
+EntryCompletion::create(const std::shared_ptr<PasswordStore>& store)
 {
-  return Glib::RefPtr<EntryCompletion>(new EntryCompletion(pass_entries));
+  return Glib::RefPtr<EntryCompletion>(new EntryCompletion(store));
 }

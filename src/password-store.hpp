@@ -15,23 +15,23 @@
  */
 #pragma once
 
-#include <algorithm>
-
 #include <glibmm.h>
 
-class PassEntries : public Glib::Object
+class PasswordStore
 {
 public:
-  using container_type = std::vector<Glib::ustring>;
+  using value_type = Glib::ustring;
+  using reference_type = value_type&;
+  using const_reference = const value_type&;
+  using container_type = std::vector<value_type>;
+  using iterator = container_type::const_iterator;
+  using const_iterator = iterator;
 
-  explicit PassEntries();
-
-  static Glib::RefPtr<PassEntries> create();
-
-  inline const container_type& entries() const
-  {
-    return m_container;
-  }
+  explicit PasswordStore();
+  PasswordStore(const PasswordStore&) = delete;
+  PasswordStore(PasswordStore&&) = delete;
+  void operator=(const PasswordStore&) = delete;
+  void operator=(PasswordStore&&) = delete;
 
   inline bool has(const Glib::ustring& entry) const
   {
@@ -44,10 +44,19 @@ public:
     ) != std::end(m_container);
   }
 
-  void select(const Glib::ustring& entry) const;
+  void reload();
 
-private:
-  void init();
+  void select(const_reference entry);
+
+  inline iterator begin() const
+  {
+    return std::begin(m_container);
+  }
+
+  inline iterator end() const
+  {
+    return std::end(m_container);
+  }
 
 private:
   container_type m_container;
