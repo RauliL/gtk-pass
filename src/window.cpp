@@ -22,7 +22,7 @@ Window::Window()
   , m_entry_list(m_store)
 {
   set_title("Select password");
-  set_default_size(450, 500);
+  set_default_size(450, 250);
   set_position(Gtk::WindowPosition::WIN_POS_CENTER);
 
   m_box.pack_start(m_search_bar, Gtk::PACK_SHRINK);
