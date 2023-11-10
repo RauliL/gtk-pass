@@ -13,7 +13,29 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include "./config.hpp"
 #include "./window.hpp"
+
+#if ENABLE_SEARCH_BAR_HACK
+static void
+hack_search_bar(Gtk::SearchBar& search_bar)
+{
+  const auto& main_box = static_cast<Gtk::Container*>(
+    static_cast<Gtk::Container*>(
+      search_bar.get_children()[0]
+    )->get_children()[0]
+  );
+  const auto& children = main_box->get_children();
+  const auto& box1 = children[0];
+  const auto& box2 = children[1];
+  const auto& box3 = children[2];
+
+  box2->set_hexpand(true);
+  box2->set_halign(Gtk::Align::ALIGN_FILL);
+  main_box->remove(*box1);
+  box3->set_hexpand(false);
+}
+#endif /* ENABLE_SEARCH_BAR_HACK */
 
 Window::Window()
   : m_pass_entries(PassEntries::create())
@@ -32,6 +54,10 @@ Window::Window()
   m_search_bar.connect_entry(m_search_entry);
   m_search_bar.set_show_close_button(false);
   m_search_bar.set_search_mode(true);
+
+#if ENABLE_SEARCH_BAR_HACK
+  hack_search_bar(m_search_bar);
+#endif
 
   m_search_entry.set_completion(m_search_entry_completion);
 

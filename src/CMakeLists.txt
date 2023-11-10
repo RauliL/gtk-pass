@@ -8,6 +8,17 @@ CHECK_INCLUDE_FILE(glob.h HAVE_GLOB_H)
 CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
 CHECK_INCLUDE_FILE(wordexp.h HAVE_WORDEXP_H)
 
+OPTION(
+  ENABLE_SEARCH_BAR_HACK
+  "Whether to enable hack that makes search bar full width."
+  OFF
+)
+
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/config.hpp.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/config.hpp
+)
+
 ADD_EXECUTABLE(
   gtk-pass
   ./entry-completion.cpp
