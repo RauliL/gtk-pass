@@ -61,10 +61,13 @@ glob(const std::string& pattern, std::vector<Glib::ustring>& results)
   if (glob_return_value != 0)
   {
     ::globfree(&glob_result);
-    std::cerr
-      << "glob() failed with return value "
-      << glob_return_value
-      << std::endl;
+    if (glob_return_value != GLOB_NOMATCH)
+    {
+      std::cerr
+        << "glob() failed with return value "
+        << glob_return_value
+        << std::endl;
+    }
 
     return false;
   }

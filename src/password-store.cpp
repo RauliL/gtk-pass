@@ -32,8 +32,18 @@ PasswordStore::reload()
 
   if (get_password_store_dir(prefix))
   {
+    bool result1;
+    bool result2;
+
     m_container.clear();
-    if (glob(prefix + "/**/*.gpg", m_container))
+
+    // We have to do two `glob()` calls so that we find _all_ entries from the
+    // store, including those that are stored under subdirectories as well as
+    // those that aren't.
+    result1 = glob(prefix + "/*.gpg", m_container);
+    result2 = glob(prefix + "/**/*.gpg", m_container);
+
+    if (result1 || result2)
     {
       // We got some entries, but they have are full filenames. Lets tweak them
       // a little bit.
