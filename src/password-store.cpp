@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Rauli Laine
+ * Copyright (c) 2023-2024, Rauli Laine
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,12 +13,77 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
+#include <optional>
 
-#include <unistd.h>
+#if defined(_WIN32)
+# include <windows.h>
+#else
+# include <pwd.h>
+# include <unistd.h>
+#endif
 
 #include "./password-store.hpp"
-#include "./utils.hpp"
+
+static std::optional<std::filesystem::path>
+get_home_dir()
+{
+  const auto home = std::getenv("HOME");
+
+  if (!home)
+  {
+#if defined(_WIN32)
+    const auto userprofile = std::getenv("USERPROFILE");
+
+    if (!userprofile)
+    {
+      const auto homedrive = std::getenv("HOMEDRIVE");
+      const auto homepath = std::getenv("HOMEPATH");
+
+      if (homedrive && *homedrive && homepath && *homepath)
+      {
+        return std::filesystem::path(homedrive) / homepath;
+      }
+    } else {
+      return userprofile;
+    }
+#else
+    const auto pw = ::getpwuid(::getuid());
+
+    if (pw)
+    {
+      return pw->pw_dir;
+    }
+#endif
+
+    return std::nullopt;
+  }
+
+  return home;
+}
+
+static std::optional<std::filesystem::path>
+get_password_store_dir()
+{
+  std::filesystem::path store_dir;
+
+  if (const auto custom_path = std::getenv("PASSWORD_STORE_DIR"))
+  {
+    store_dir = custom_path;
+  }
+  else if (const auto home_dir = get_home_dir())
+  {
+    store_dir = *home_dir / ".password-store";
+  }
+  if (std::filesystem::is_directory(store_dir))
+  {
+    return store_dir;
+  }
+
+  return std::nullopt;
+}
 
 PasswordStore::PasswordStore()
 {
@@ -28,31 +93,25 @@ PasswordStore::PasswordStore()
 void
 PasswordStore::reload()
 {
-  std::string prefix;
+  using std::filesystem::recursive_directory_iterator;
 
-  if (get_password_store_dir(prefix))
+  if (const auto store_dir = get_password_store_dir())
   {
-    bool result1;
-    bool result2;
+    const auto store_path = store_dir->native();
 
-    m_container.clear();
-
-    // We have to do two `glob()` calls so that we find _all_ entries from the
-    // store, including those that are stored under subdirectories as well as
-    // those that aren't.
-    result1 = glob(prefix + "/*.gpg", m_container);
-    result2 = glob(prefix + "/**/*.gpg", m_container);
-
-    if (result1 || result2)
+    for (const auto& file : recursive_directory_iterator(*store_dir))
     {
-      // We got some entries, but they have are full filenames. Lets tweak them
-      // a little bit.
-      for (auto& entry : m_container)
+      if (file.is_regular_file() && file.path().extension() == ".gpg")
       {
+        // We have a matching entry, but it's an absolute path. Lets tweak it
+        // a little bit.
+        auto path = file.path().native();
+
         // Remove the password store directory from the entry.
-        entry = entry.substr(prefix.length() + 1);
+        path = path.substr(store_path.length() + 1);
         // Remove the ".gpg" extension from the entry.
-        entry = entry.substr(0, entry.length() - 4);
+        path = path.substr(0, path.length() - 4);
+        m_container.push_back(path);
       }
     }
   } else {
@@ -65,6 +124,18 @@ PasswordStore::select(const_reference entry)
 {
   if (has(entry))
   {
-    ::execlp("pass", "pass", "show", "-c", entry.c_str(), nullptr);
+#if defined(_WIN32)
+    ::_execlp
+#else
+    ::execlp
+#endif
+    (
+      "pass",
+      "pass",
+      "show",
+      "-c",
+      entry.c_str(),
+      nullptr
+    );
   }
 }

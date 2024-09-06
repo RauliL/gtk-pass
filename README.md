@@ -18,7 +18,7 @@ That's it.
 
 - [CMake](https://www.cmake.org)
 - [GTKmm](https://gtkmm.org/en/index.html) >= 3.24
-- C++11 compiler
+- C++17 compiler
 
 ## Installation
 

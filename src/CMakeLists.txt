@@ -4,31 +4,34 @@ INCLUDE(CheckIncludeFile)
 
 PKG_CHECK_MODULES(GTKMM gtkmm-3.0 REQUIRED)
 
-CHECK_INCLUDE_FILE(glob.h HAVE_GLOB_H)
-CHECK_INCLUDE_FILE(unistd.h HAVE_UNISTD_H)
-CHECK_INCLUDE_FILE(wordexp.h HAVE_WORDEXP_H)
-
 ADD_EXECUTABLE(
   gtk-pass
   ./entry-completion.cpp
   ./entry-list.cpp
   ./main.cpp
   ./password-store.cpp
-  ./utils.cpp
   ./window.cpp
 )
 
 TARGET_COMPILE_FEATURES(
   gtk-pass
   PRIVATE
-    cxx_std_11
+    cxx_std_17
 )
 
-TARGET_COMPILE_OPTIONS(
-  gtk-pass
-  PRIVATE
-    -Wall -Werror
-)
+IF(MSVC)
+  TARGET_COMPILE_OPTIONS(
+    gtk-pass
+    PRIVATE
+      /W4 /WX
+  )
+ELSE()
+  TARGET_COMPILE_OPTIONS(
+    gtk-pass
+    PRIVATE
+      -Wall -Werror
+  )
+ENDIF()
 
 TARGET_INCLUDE_DIRECTORIES(
   gtk-pass
