@@ -99,6 +99,7 @@ PasswordStore::reload()
   {
     const auto store_path = store_dir->native();
 
+    m_container.clear();
     for (const auto& file : recursive_directory_iterator(*store_dir))
     {
       if (file.is_regular_file() && file.path().extension() == ".gpg")
