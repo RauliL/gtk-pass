@@ -84,7 +84,7 @@ EntryList::on_row_activated(
   Gtk::TreeViewColumn* column
 )
 {
-  const auto iter = m_tree_model->get_iter(path);
+  const auto iter = m_tree_model_filter->get_iter(path);
 
   if (iter)
   {
