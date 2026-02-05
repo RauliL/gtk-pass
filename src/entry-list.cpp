@@ -33,6 +33,7 @@ EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
   m_tree_view.set_model(m_tree_model_filter);
   m_tree_view.set_headers_visible(false);
   m_tree_view.append_column("Entry", m_columns.entry_column());
+  m_tree_view.set_activate_on_single_click(true);
   m_tree_view.signal_row_activated().connect(sigc::mem_fun(
     this,
     &EntryList::on_row_activated
