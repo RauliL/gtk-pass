@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, Rauli Laine
+ * Copyright (c) 2023-2026, Rauli Laine
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -13,6 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -115,6 +116,7 @@ PasswordStore::reload()
         m_container.push_back(path);
       }
     }
+    std::sort(std::begin(m_container), std::end(m_container));
   } else {
     std::cerr << "Unable to determine location of passwords." << std::endl;
   }

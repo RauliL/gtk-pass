@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, Rauli Laine
+ * Copyright (c) 2023-2026, Rauli Laine
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -33,7 +33,7 @@ private:
   Gtk::TreeModelColumn<Glib::ustring> m_entry_column;
 };
 
-class EntryList : public Gtk::Bin
+class EntryList : public Gtk::ScrolledWindow
 {
 public:
   explicit EntryList(const std::shared_ptr<PasswordStore>& store);
@@ -54,7 +54,6 @@ protected:
 
 private:
   std::shared_ptr<PasswordStore> m_store;
-  Gtk::ScrolledWindow m_scrolled_window;
   Gtk::TreeView m_tree_view;
   EntryListColumns m_columns;
   Glib::RefPtr<Gtk::ListStore> m_tree_model;

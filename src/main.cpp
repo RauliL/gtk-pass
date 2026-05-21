@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, Rauli Laine
+ * Copyright (c) 2023-2026, Rauli Laine
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -20,9 +20,8 @@ main(int argc, char** argv)
 {
   auto app = Gtk::Application::create(
     "dev.rauli.gtk-pass",
-    Gio::APPLICATION_NON_UNIQUE
+    Gio::Application::Flags::NON_UNIQUE
   );
-  Window window;
 
-  return app->run(window, argc, argv);
+  return app->make_window_and_run<Window>(argc, argv);
 }

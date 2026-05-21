@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, Rauli Laine
+ * Copyright (c) 2023-2026, Rauli Laine
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,7 +25,11 @@ public:
   explicit Window();
 
 protected:
-  bool on_key_press_event(GdkEventKey* event);
+  bool on_window_key_pressed(
+    guint keyval,
+    guint keycode,
+    Gdk::ModifierType state
+  );
   void on_search_text_changed();
   void on_search_activated();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, Rauli Laine
+ * Copyright (c) 2023-2026, Rauli Laine
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -25,17 +25,16 @@ EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
   , m_tree_model(Gtk::ListStore::create(m_columns))
   , m_tree_model_filter(Gtk::TreeModelFilter::create(m_tree_model))
 {
-  set_margin_top(8);
-  set_margin_bottom(8);
-  set_margin_left(8);
-  set_margin_right(8);
+  set_hexpand(true);
+  set_vexpand(true);
 
+  m_tree_view.set_margin(8);
   m_tree_view.set_model(m_tree_model_filter);
   m_tree_view.set_headers_visible(false);
   m_tree_view.append_column("Entry", m_columns.entry_column());
   m_tree_view.set_activate_on_single_click(true);
   m_tree_view.signal_row_activated().connect(sigc::mem_fun(
-    this,
+    *this,
     &EntryList::on_row_activated
   ));
 
@@ -55,12 +54,8 @@ EntryList::EntryList(const std::shared_ptr<PasswordStore>& store)
     }
   );
 
-  m_scrolled_window.set_policy(
-    Gtk::POLICY_AUTOMATIC,
-    Gtk::POLICY_AUTOMATIC
-  );
-  m_scrolled_window.add(m_tree_view);
-  add(m_scrolled_window);
+  set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::ALWAYS);
+  set_child(m_tree_view);
 
   reload();
 }
