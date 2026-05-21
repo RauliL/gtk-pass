@@ -13,6 +13,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -115,6 +116,7 @@ PasswordStore::reload()
         m_container.push_back(path);
       }
     }
+    std::sort(std::begin(m_container), std::end(m_container));
   } else {
     std::cerr << "Unable to determine location of passwords." << std::endl;
   }
