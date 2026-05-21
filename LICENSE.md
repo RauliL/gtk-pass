@@ -1,4 +1,4 @@
-Copyright (c) 2023-2024, Rauli Laine
+Copyright (c) 2023-2026, Rauli Laine
 
 Permission to use, copy, modify, and distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
