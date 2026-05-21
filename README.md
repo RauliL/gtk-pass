@@ -1,4 +1,4 @@
-# ![](icons/gtk-pass48.png) GTK-Pass
+# ![](icons/gtk-pass32.png) GTK-Pass
 
 GTK-Pass is an simple GUI for the [pass] password manager inspired by
 [passmenu], except that it uses [GTK] instead of dmenu. It simply lists
@@ -17,17 +17,17 @@ That's it.
 ## Dependencies
 
 - [CMake](https://www.cmake.org)
-- [GTKmm](https://gtkmm.org/en/index.html) >= 3.24
+- [GTKmm](https://gtkmm.org/en/index.html) 4
 - C++17 compiler
 
 ## Installation
 
 ```bash
-$ git clone https://github.com/RauliL/gtk-pass.git
-$ cd gtk-pass
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-$ sudo make install
+git clone https://github.com/RauliL/gtk-pass.git
+cd gtk-pass
+mkdir build
+cd build
+cmake ..
+make
+sudo make install
 ```
