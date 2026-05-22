@@ -12,6 +12,6 @@ FOREACH(ICON_SIZE 16 32 48 64 128 256)
     DESTINATION
       share/icons/hicolor/${ICON_SIZE}x${ICON_SIZE}/apps
     RENAME
-      gtk-pass
+      gtk-pass.png
   )
 ENDFOREACH()
