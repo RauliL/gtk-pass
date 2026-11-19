@@ -17,53 +17,8 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
-#include <optional>
-
-#if defined(_WIN32)
-# include <windows.h>
-#else
-# include <pwd.h>
-# include <unistd.h>
-#endif
 
 #include "./password-store.hpp"
-
-static std::optional<std::filesystem::path>
-get_home_dir()
-{
-  const auto home = std::getenv("HOME");
-
-  if (!home)
-  {
-#if defined(_WIN32)
-    const auto userprofile = std::getenv("USERPROFILE");
-
-    if (!userprofile)
-    {
-      const auto homedrive = std::getenv("HOMEDRIVE");
-      const auto homepath = std::getenv("HOMEPATH");
-
-      if (homedrive && *homedrive && homepath && *homepath)
-      {
-        return std::filesystem::path(homedrive) / homepath;
-      }
-    } else {
-      return userprofile;
-    }
-#else
-    const auto pw = ::getpwuid(::getuid());
-
-    if (pw)
-    {
-      return pw->pw_dir;
-    }
-#endif
-
-    return std::nullopt;
-  }
-
-  return home;
-}
 
 static std::optional<std::filesystem::path>
 get_password_store_dir()
@@ -73,10 +28,8 @@ get_password_store_dir()
   if (const auto custom_path = std::getenv("PASSWORD_STORE_DIR"))
   {
     store_dir = custom_path;
-  }
-  else if (const auto home_dir = get_home_dir())
-  {
-    store_dir = *home_dir / ".password-store";
+  } else {
+    store_dir = Glib::build_filename(Glib::get_home_dir(), ".password-store");
   }
   if (std::filesystem::is_directory(store_dir))
   {
