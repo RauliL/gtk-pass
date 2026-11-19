@@ -14,29 +14,63 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 #include <algorithm>
-#include <cstdlib>
-#include <filesystem>
 #include <iostream>
+#include <optional>
 
 #include "./password-store.hpp"
 
-static std::optional<std::filesystem::path>
+static std::optional<std::string>
 get_password_store_dir()
 {
-  std::filesystem::path store_dir;
+  std::string store_dir = Glib::getenv("PASSWORD_STORE_DIR");
 
-  if (const auto custom_path = std::getenv("PASSWORD_STORE_DIR"))
+  if (store_dir.empty())
   {
-    store_dir = custom_path;
-  } else {
     store_dir = Glib::build_filename(Glib::get_home_dir(), ".password-store");
   }
-  if (std::filesystem::is_directory(store_dir))
+  if (Glib::file_test(store_dir, Glib::FileTest::IS_DIR))
   {
     return store_dir;
   }
 
   return std::nullopt;
+}
+
+static void
+collect_entries(
+  const std::string& dir_path,
+  const std::string& relative_prefix,
+  PasswordStore::container_type& entries
+)
+{
+  Glib::Dir dir(dir_path);
+
+  for (const auto& name : dir)
+  {
+    const auto full_path = Glib::build_filename(dir_path, name);
+
+    if (Glib::file_test(full_path, Glib::FileTest::IS_DIR))
+    {
+      const auto next_prefix = relative_prefix.empty()
+        ? name
+        : Glib::build_filename(relative_prefix, name);
+
+      collect_entries(full_path, next_prefix, entries);
+    }
+    else if (
+      Glib::file_test(full_path, Glib::FileTest::IS_REGULAR) &&
+      Glib::str_has_suffix(name, ".gpg")
+    )
+    {
+      auto entry = relative_prefix.empty()
+        ? name
+        : Glib::build_filename(relative_prefix, name);
+
+      // Remove the ".gpg" extension from the entry.
+      entry.resize(entry.size() - 4);
+      entries.push_back(Glib::filename_to_utf8(entry));
+    }
+  }
 }
 
 PasswordStore::PasswordStore()
@@ -47,28 +81,10 @@ PasswordStore::PasswordStore()
 void
 PasswordStore::reload()
 {
-  using std::filesystem::recursive_directory_iterator;
-
   if (const auto store_dir = get_password_store_dir())
   {
-    const auto store_path = store_dir->native();
-
     m_container.clear();
-    for (const auto& file : recursive_directory_iterator(*store_dir))
-    {
-      if (file.is_regular_file() && file.path().extension() == ".gpg")
-      {
-        // We have a matching entry, but it's an absolute path. Lets tweak it
-        // a little bit.
-        auto path = file.path().native();
-
-        // Remove the password store directory from the entry.
-        path = path.substr(store_path.length() + 1);
-        // Remove the ".gpg" extension from the entry.
-        path = path.substr(0, path.length() - 4);
-        m_container.push_back(path);
-      }
-    }
+    collect_entries(*store_dir, {}, m_container);
     std::sort(std::begin(m_container), std::end(m_container));
   } else {
     std::cerr << "Unable to determine location of passwords." << std::endl;
